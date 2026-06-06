@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Quiz 2 — 80 Questions</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0d1117; color: #e6edf3; min-height: 100vh; }
+.page-wrap { max-width: 720px; margin: 0 auto; padding: 2rem 1rem 5rem; }
+header { margin-bottom: 2rem; }
+header h1 { font-size: 1.55rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
+header p { font-size: 0.88rem; color: #8b949e; margin-top: 5px; }
+#stats-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 1.25rem; }
+.stat-pill { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 6px 14px; font-size: 0.82rem; color: #8b949e; }
+.stat-pill strong { color: #e6edf3; }
+#progress-wrap { margin-bottom: 1.75rem; }
+#progress-bg { height: 4px; background: #21262d; border-radius: 99px; overflow: hidden; }
+#progress-fill { height: 100%; width: 0%; background: #1D9E75; border-radius: 99px; transition: width 0.3s; }
+.section-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; margin: 2.25rem 0 0.9rem; padding-bottom: 8px; border-bottom: 1px solid #21262d; }
+.section-label:first-of-type { margin-top: 0; }
+.q-block { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 16px 18px; margin-bottom: 10px; transition: border-color 0.2s; }
+.q-block.answered { border-color: #3d444d; }
+.q-num { font-size: 0.7rem; color: #484f58; font-weight: 700; margin-bottom: 7px; text-transform: uppercase; letter-spacing: 0.06em; }
+.q-text { font-size: 0.93rem; color: #e6edf3; line-height: 1.65; margin-bottom: 12px; }
+.q-text code { font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.82rem; background: #21262d; padding: 2px 6px; border-radius: 4px; color: #79c0ff; }
+.code-block { font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.8rem; line-height: 1.8; background: #0d1117; color: #a5d6ff; border: 1px solid #30363d; border-radius: 8px; padding: 12px 14px; margin-bottom: 12px; white-space: pre; overflow-x: auto; }
+.opts { display: flex; flex-direction: column; gap: 7px; }
+.opt-btn { display: flex; align-items: flex-start; gap: 10px; background: #21262d; border: 1px solid #30363d; border-radius: 8px; padding: 10px 13px; cursor: pointer; font-size: 0.88rem; color: #c9d1d9; text-align: left; width: 100%; line-height: 1.5; transition: all 0.15s; font-family: inherit; }
+.opt-btn:hover:not([disabled]) { background: #292e36; border-color: #484f58; color: #e6edf3; }
+.opt-btn[disabled] { cursor: default; }
+.opt-letter { min-width: 22px; height: 22px; border-radius: 50%; background: #0d1117; border: 1px solid #484f58; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; flex-shrink: 0; margin-top: 1px; color: #8b949e; }
+.opt-btn code { font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.8rem; background: #0d1117; padding: 1px 5px; border-radius: 4px; color: #79c0ff; }
+.opt-btn.correct { background: #1a3a2a; border-color: #2ea043; }
+.opt-btn.correct .opt-letter { background: #2ea043; color: #fff; border-color: #2ea043; }
+.opt-btn.wrong { background: #3a1a1a; border-color: #da3633; }
+.opt-btn.wrong .opt-letter { background: #da3633; color: #fff; border-color: #da3633; }
+.opt-btn.reveal-correct { background: #1a3a2a; border-color: #2ea043; opacity: 0.6; }
+.feedback { font-size: 0.82rem; margin-top: 9px; padding: 8px 11px; border-radius: 7px; line-height: 1.5; display: none; font-weight: 500; }
+.feedback.show { display: block; }
+.feedback.ok { background: #1a3a2a; color: #56d364; border: 1px solid #2ea043; }
+.feedback.no { background: #3a1a1a; color: #f85149; border: 1px solid #da3633; }
+#submit-btn { display: block; width: 100%; margin-top: 2.5rem; padding: 14px; font-size: 0.95rem; font-weight: 700; background: #238636; color: #fff; border: 1px solid #2ea043; border-radius: 10px; cursor: pointer; transition: background 0.15s; font-family: inherit; letter-spacing: 0.02em; }
+#submit-btn:hover { background: #2ea043; }
+#result-box { display: none; margin-top: 2rem; padding: 28px; background: #161b22; border: 1px solid #30363d; border-radius: 16px; text-align: center; }
+#result-box h2 { font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: 6px; }
+.score-big { font-size: 3.2rem; font-weight: 800; color: #fff; margin: 14px 0 4px; }
+.score-pct { font-size: 0.88rem; color: #8b949e; margin-bottom: 20px; }
+.breakdown { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 16px; }
+.bk-pill { padding: 5px 14px; border-radius: 7px; font-size: 0.78rem; font-weight: 700; }
+.bk-pill.g { background: #1a3a2a; color: #56d364; border: 1px solid #2ea043; }
+.bk-pill.b { background: #3a1a1a; color: #f85149; border: 1px solid #da3633; }
+#retry-btn { margin-top: 20px; padding: 10px 28px; font-size: 0.88rem; font-weight: 600; border: 1px solid #30363d; border-radius: 8px; background: #21262d; color: #e6edf3; cursor: pointer; font-family: inherit; transition: background 0.15s; }
+#retry-btn:hover { background: #292e36; }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <header>
+    <h1>🐍 Python Quiz 2 — 80 Questions</h1>
+    <p>Hello World &bull; Control Flow &bull; Lists &bull; Loops &bull; Functions &bull; Strings</p>
+  </header>
+
+  <div id="stats-bar">
+    <div class="stat-pill"><strong id="s-ans">0</strong> / 80 answered</div>
+    <div class="stat-pill">Correct: <strong id="s-cor">0</strong></div>
+    <div class="stat-pill">Wrong: <strong id="s-wrg">0</strong></div>
+    <div class="stat-pill">Score: <strong id="s-pct">0</strong>%</div>
+  </div>
+
+  <div id="progress-wrap">
+    <div id="progress-bg"><div id="progress-fill"></div></div>
+  </div>
+
+  <div id="questions-container"></div>
+
+  <button id="submit-btn">Submit &amp; See Final Score</button>
+
+  <div id="result-box">
+    <h2 id="res-title"></h2>
+    <div class="score-big" id="res-score"></div>
+    <div class="score-pct" id="res-pct"></div>
+    <div class="breakdown" id="res-breakdown"></div>
+    <button id="retry-btn" onclick="location.reload()">Try Again</button>
+  </div>
+
+</div>
+
+<script>
+const SECTIONS = [
+  {
+    label: "Section A — Hello World",
+    color: "#1D9E75",
+    qs: [
+      {
+        q: "What is the output of:<br><div class='code-block'>print(3 + 4 * 2)</div>",
+        opts: ["14", "11", "10", "Error"],
+        ans: 1
+      },
+      {
+        q: "Which of these is a valid way to write a comment in Python?",
+        opts: ["// this is a comment", "/* this is a comment */", "# this is a comment", "-- this is a comment"],
+        ans: 2
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>x = 5\ny = 2\nprint(x ** y)</div>",
+        opts: ["10", "7", "25", "3"],
+        ans: 2
+      },
+      {
+        q: "What error does this cause?<br><div class='code-block'>print(hello)</div>",
+        opts: ["SyntaxError", "TypeError", "NameError", "ValueError"],
+        ans: 2
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>a = 100\na -= 35\nprint(a)</div>",
+        opts: ["135", "65", "35", "100"],
+        ans: 1
+      },
+      {
+        q: "Which of these correctly assigns a string to a variable?",
+        opts: ["name == 'Ali'", "name = Ali", "name = 'Ali'", "'Ali' == name"],
+        ans: 2
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>print(17 % 5)</div>",
+        opts: ["3", "2", "12", "3.4"],
+        ans: 1
+      },
+      {
+        q: "What type does the value <code>3.14</code> have in Python?",
+        opts: ["int", "str", "bool", "float"],
+        ans: 3
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>x = 4\nx *= 3\nprint(x)</div>",
+        opts: ["7", "4", "12", "43"],
+        ans: 2
+      },
+      {
+        q: "Which statement will cause a <code>ZeroDivisionError</code>?",
+        opts: ["print(10 % 2)", "print(10 // 0)", "print(10 * 0)", "print(0 + 10)"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>print(type(True))</div>",
+        opts: ["<class 'str'>", "<class 'int'>", "<class 'bool'>", "<class 'float'>"],
+        ans: 2
+      },
+      {
+        q: "Which of the following is NOT a valid Python data type?",
+        opts: ["int", "float", "char", "bool"],
+        ans: 2
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>print(\"Python\" * 2)</div>",
+        opts: ["Python2", "PythonPython", "Error", "2Python"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>a = 9\nb = 4\nprint(a // b)</div>",
+        opts: ["2.25", "2", "3", "1"],
+        ans: 1
+      }
+    ]
+  },
+  {
+    label: "Section B — Control Flow",
+    color: "#378ADD",
+    qs: [
+      {
+        q: "What is the output of:<br><div class='code-block'>x = 3\nif x > 5:\n    print(\"A\")\nelif x > 1:\n    print(\"B\")\nelse:\n    print(\"C\")</div>",
+        opts: ["A", "B", "C", "Nothing"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>x = 10\nif x == 10 or x == 5:\n    print(\"yes\")\nelse:\n    print(\"no\")</div>",
+        opts: ["no", "yes", "Error", "None"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>a = True\nb = False\nprint(a and b)</div>",
+        opts: ["True", "False", "None", "Error"],
+        ans: 1
+      },
+      {
+        q: "Which of the following correctly checks if <code>x</code> is between 1 and 10 inclusive?",
+        opts: ["if 1 < x < 10", "if x > 1 and x < 10", "if x >= 1 and x <= 10", "if x == 1 to 10"],
+        ans: 2
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>n = 0\nif n:\n    print(\"truthy\")\nelse:\n    print(\"falsy\")</div>",
+        opts: ["truthy", "falsy", "0", "Error"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>x = 7\nif x > 10:\n    print(\"big\")\nelif x > 5:\n    print(\"medium\")\nelif x > 2:\n    print(\"small\")</div>",
+        opts: ["big", "medium", "small", "medium and small"],
+        ans: 1
+      },
+      {
+        q: "What does <code>not (True and False)</code> evaluate to?",
+        opts: ["False", "True", "None", "Error"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>x = 15\nif x % 3 == 0 and x % 5 == 0:\n    print(\"FizzBuzz\")\nelif x % 3 == 0:\n    print(\"Fizz\")\nelse:\n    print(\"Buzz\")</div>",
+        opts: ["Fizz", "Buzz", "FizzBuzz", "Nothing"],
+        ans: 2
+      },
+      {
+        q: "In Python, what value does an empty string <code>\"\"</code> evaluate to in a boolean context?",
+        opts: ["True", "False", "None", "Error"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>x = 5\nresult = \"even\" if x % 2 == 0 else \"odd\"\nprint(result)</div>",
+        opts: ["even", "odd", "5", "Error"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>print(not False)</div>",
+        opts: ["False", "True", "None", "0"],
+        ans: 1
+      },
+      {
+        q: "Which operator has the highest precedence in Python comparisons?",
+        opts: ["or", "and", "not", "=="],
+        ans: 2
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>a = 5\nb = 10\nif a > 3 and b < 20:\n    print(\"both true\")</div>",
+        opts: ["Nothing", "both true", "Error", "False"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>x = \"hello\"\nif x:\n    print(\"not empty\")\nelse:\n    print(\"empty\")</div>",
+        opts: ["empty", "not empty", "hello", "Error"],
+        ans: 1
+      }
+    ]
+  },
+  {
+    label: "Section C — Lists",
+    color: "#BA7517",
+    qs: [
+      {
+        q: "What is the output of:<br><div class='code-block'>nums = [3, 6, 9, 12]\nprint(nums[-2])</div>",
+        opts: ["6", "9", "12", "3"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>x = [1, 2, 3, 4, 5]\nprint(x[2:4])</div>",
+        opts: ["[2, 3, 4]", "[3, 4]", "[2, 3]", "[3, 4, 5]"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>a = [10, 20, 30]\na[1] = 99\nprint(a)</div>",
+        opts: ["[10, 20, 30]", "[99, 20, 30]", "[10, 99, 30]", "[10, 20, 99]"],
+        ans: 2
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>colours = [\"red\", \"green\", \"blue\"]\ncolours.remove(\"green\")\nprint(colours)</div>",
+        opts: ["['red', 'green', 'blue']", "['red', 'blue']", "['green']", "Error"],
+        ans: 1
+      },
+      {
+        q: "What does <code>len([4, 8, 15, 16, 23, 42])</code> return?",
+        opts: ["5", "6", "42", "7"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>a = [1, 2, 3]\nb = a\nb.append(4)\nprint(a)</div>",
+        opts: ["[1, 2, 3]", "[1, 2, 3, 4]", "[4]", "Error"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>x = [0, 1, 2, 3, 4]\nprint(x[::2])</div>",
+        opts: ["[0, 2, 4]", "[1, 3]", "[0, 1, 2]", "[2, 4]"],
+        ans: 0
+      },
+      {
+        q: "Which method returns AND removes the last item from a list?",
+        opts: [".remove()", ".delete()", ".pop()", ".discard()"],
+        ans: 2
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>grid = [[1,2,3],[4,5,6],[7,8,9]]\nprint(grid[1][2])</div>",
+        opts: ["4", "5", "6", "8"],
+        ans: 2
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>words = [\"cat\", \"dog\", \"bird\"]\nprint(words.index(\"dog\"))</div>",
+        opts: ["0", "1", "2", "Error"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>nums = [5, 3, 8, 1]\nnums.sort()\nprint(nums)</div>",
+        opts: ["[5, 3, 8, 1]", "[1, 3, 5, 8]", "[8, 5, 3, 1]", "Error"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>a = [1, 2, 3]\nprint(a * 2)</div>",
+        opts: ["[2, 4, 6]", "[1, 2, 3, 1, 2, 3]", "Error", "[6]"],
+        ans: 1
+      },
+      {
+        q: "What does <code>\"dog\" in [\"cat\", \"dog\", \"fish\"]</code> return?",
+        opts: ["1", "False", "True", "Error"],
+        ans: 2
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>x = [10, 20, 30, 40, 50]\nprint(x[-3:])</div>",
+        opts: ["[10, 20, 30]", "[30, 40, 50]", "[20, 30, 40]", "[40, 50]"],
+        ans: 1
+      }
+    ]
+  },
+  {
+    label: "Section D — Loops",
+    color: "#c084fc",
+    qs: [
+      {
+        q: "What is the output of:<br><div class='code-block'>for i in range(1, 6):\n    print(i, end=\" \")</div>",
+        opts: ["1 2 3 4 5 6", "1 2 3 4 5", "0 1 2 3 4 5", "1 2 3 4"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>count = 5\nwhile count > 0:\n    count -= 2\nprint(count)</div>",
+        opts: ["0", "1", "-1", "3"],
+        ans: 2
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>for i in range(4):\n    if i == 2:\n        continue\n    print(i, end=\" \")</div>",
+        opts: ["0 1 2 3", "0 1 3", "1 3", "0 1 2"],
+        ans: 1
+      },
+      {
+        q: "How many times is <code>print</code> called?<br><div class='code-block'>for i in range(3):\n    for j in range(3):\n        print(i, j)</div>",
+        opts: ["3", "6", "9", "12"],
+        ans: 2
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>result = []\nfor i in range(5):\n    result.append(i * i)\nprint(result)</div>",
+        opts: ["[0, 1, 2, 3, 4]", "[1, 4, 9, 16, 25]", "[0, 1, 4, 9, 16]", "[0, 2, 4, 6, 8]"],
+        ans: 2
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>x = 1\nwhile x < 100:\n    x *= 2\nprint(x)</div>",
+        opts: ["64", "100", "128", "256"],
+        ans: 2
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>for i in range(5):\n    if i == 4:\n        break\nprint(\"done\")</div>",
+        opts: ["done is never printed", "done", "4", "Error"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>nums = [2, 4, 6, 8]\ntotal = 0\nfor n in nums:\n    total += n\nprint(total)</div>",
+        opts: ["18", "20", "24", "10"],
+        ans: 1
+      },
+      {
+        q: "What does <code>range(0, 10, 3)</code> generate?",
+        opts: ["0, 3, 6, 9", "0, 3, 6, 9, 10", "3, 6, 9", "0, 3, 6"],
+        ans: 0
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>i = 10\nwhile i > 0:\n    i -= 3\nprint(i)</div>",
+        opts: ["0", "-2", "1", "-1"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>evens = [x for x in range(10) if x % 2 == 0]\nprint(evens)</div>",
+        opts: ["[1, 3, 5, 7, 9]", "[0, 2, 4, 6, 8]", "[2, 4, 6, 8, 10]", "[0, 2, 4, 6, 8, 10]"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>for letter in \"code\":\n    print(letter.upper(), end=\"\")</div>",
+        opts: ["code", "CODE", "c o d e", "C O D E"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>n = 3\nfor i in range(n):\n    for j in range(i + 1):\n        print(\"*\", end=\"\")\n    print()</div>",
+        opts: ["* ** ***", "*** ** *", "*** *** ***", "* * *"],
+        ans: 0
+      },
+      {
+        q: "What is a list comprehension equivalent to?",
+        opts: ["A while loop that builds a string", "A for loop that builds a new list", "A function that filters data", "A nested if statement"],
+        ans: 1
+      }
+    ]
+  },
+  {
+    label: "Section E — Functions",
+    color: "#818cf8",
+    qs: [
+      {
+        q: "What is the output of:<br><div class='code-block'>def double(n):\n    return n * 2\nprint(double(double(3)))</div>",
+        opts: ["6", "9", "12", "3"],
+        ans: 2
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>def say(word, times=3):\n    print(word * times)\nsay(\"hi\")</div>",
+        opts: ["hi", "hihihi", "hi hi hi", "Error"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>def mystery(x):\n    if x > 0:\n        return x\n    return -x\nprint(mystery(-9))</div>",
+        opts: ["-9", "0", "9", "Error"],
+        ans: 2
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>total = 0\ndef add(n):\n    global total\n    total += n\nadd(5)\nadd(3)\nprint(total)</div>",
+        opts: ["0", "5", "3", "8"],
+        ans: 3
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>def calc(a, b, op=\"add\"):\n    if op == \"add\":\n        return a + b\n    return a - b\nprint(calc(10, 4, op=\"sub\"))</div>",
+        opts: ["14", "6", "4", "Error"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>def swap(a, b):\n    return b, a\nx, y = swap(1, 2)\nprint(x, y)</div>",
+        opts: ["1 2", "2 1", "Error", "(2, 1)"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>square = lambda x: x ** 2\nprint(square(7))</div>",
+        opts: ["14", "49", "7", "Error"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>def count_up(start, stop):\n    result = []\n    for i in range(start, stop):\n        result.append(i)\n    return result\nprint(count_up(2, 5))</div>",
+        opts: ["[2, 3, 4, 5]", "[2, 3, 4]", "[1, 2, 3, 4]", "Error"],
+        ans: 1
+      },
+      {
+        q: "Which of the following correctly calls a function with keyword arguments?",
+        opts: ["greet('name'='Sam')", "greet(name: 'Sam')", "greet(name='Sam')", "greet[name='Sam']"],
+        ans: 2
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>def outer(x):\n    def inner(y):\n        return x + y\n    return inner\nadd5 = outer(5)\nprint(add5(3))</div>",
+        opts: ["3", "5", "8", "Error"],
+        ans: 2
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>def is_even(n):\n    return n % 2 == 0\nprint(is_even(7))</div>",
+        opts: ["True", "False", "1", "0"],
+        ans: 1
+      },
+      {
+        q: "What happens when you call a function before defining it in Python?",
+        opts: ["It works fine", "It returns None", "It raises a NameError", "It raises a SyntaxError"],
+        ans: 2
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>def power(base, exp=2):\n    return base ** exp\nprint(power(3, 3))</div>",
+        opts: ["6", "9", "27", "Error"],
+        ans: 2
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>nums = [1, 2, 3, 4, 5]\nresult = list(filter(lambda x: x > 2, nums))\nprint(result)</div>",
+        opts: ["[1, 2]", "[3, 4, 5]", "[2, 3, 4, 5]", "Error"],
+        ans: 1
+      }
+    ]
+  },
+  {
+    label: "Section F — Strings",
+    color: "#34d399",
+    qs: [
+      {
+        q: "What is the output of:<br><div class='code-block'>s = \"programming\"\nprint(s[3:7])</div>",
+        opts: ["prog", "gram", "ramm", "rogr"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>s = \"  hello world  \"\nprint(s.strip().upper())</div>",
+        opts: ["  HELLO WORLD  ", "HELLO WORLD", "hello world", "Error"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>words = \"one,two,three\"\nprint(words.split(\",\"))</div>",
+        opts: ["['one two three']", "['one', 'two', 'three']", "one two three", "Error"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>s = \"abcdef\"\nprint(s[::-1])</div>",
+        opts: ["abcdef", "fedcba", "Error", "abcfed"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>name = \"Alice\"\nage = 20\nprint(\"Name: {}, Age: {}\".format(name, age))</div>",
+        opts: ["Name: {}, Age: {}", "Name: Alice, Age: 20", "Name: name, Age: age", "Error"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>s = \"hello\"\nprint(s.count(\"l\"))</div>",
+        opts: ["1", "2", "3", "0"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>s = \"Python is fun\"\nprint(s.startswith(\"Python\"))</div>",
+        opts: ["False", "True", "Python", "Error"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>s = \"12345\"\nprint(s.isdigit())</div>",
+        opts: ["False", "True", "12345", "Error"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>parts = [\"py\", \"th\", \"on\"]\nprint(\"\".join(parts))</div>",
+        opts: ["py th on", "['py', 'th', 'on']", "python", "Error"],
+        ans: 2
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>s = \"banana\"\nprint(s.replace(\"na\", \"ZZ\"))</div>",
+        opts: ["baZZZZ", "baZZna", "banZZZZ", "baZZnZZ"],
+        ans: 0
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>s = \"Hello World\"\nprint(s.split())</div>",
+        opts: ["['Hello World']", "['Hello', 'World']", "Hello World", "Error"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>s = \"racecar\"\nprint(s == s[::-1])</div>",
+        opts: ["False", "racecar", "True", "Error"],
+        ans: 2
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>s = \"   \"\nprint(s.strip() == \"\")</div>",
+        opts: ["False", "True", "   ", "Error"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>s = \"the quick brown fox\"\nwords = s.split()\nprint(len(words))</div>",
+        opts: ["3", "4", "19", "18"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>s = \"abcabc\"\nprint(s.find(\"b\"))</div>",
+        opts: ["0", "1", "4", "-1"],
+        ans: 1
+      },
+      {
+        q: "What is the output of:<br><div class='code-block'>s = \"Hello\"\nprint(s[1:4])</div>",
+        opts: ["Hel", "ell", "ello", "Hell"],
+        ans: 1
+      }
+    ]
+  }
+];
+
+let answered = 0, correct = 0, wrong = 0;
+const userAnswers = {};
+
+function buildQuiz() {
+  const container = document.getElementById("questions-container");
+  let qCounter = 0;
+
+  SECTIONS.forEach(function(section) {
+    const label = document.createElement("div");
+    label.className = "section-label";
+    label.style.borderBottomColor = section.color + "55";
+    label.style.color = section.color;
+    label.textContent = section.label;
+    container.appendChild(label);
+
+    section.qs.forEach(function(q) {
+      qCounter++;
+      const qId = qCounter;
+
+      const block = document.createElement("div");
+      block.className = "q-block";
+      block.id = "q" + qId;
+      block.innerHTML =
+        '<div class="q-num">Question ' + qId + '</div>' +
+        '<div class="q-text">' + q.q + '</div>' +
+        '<div class="opts" id="opts' + qId + '"></div>' +
+        '<div class="feedback" id="fb' + qId + '"></div>';
+      container.appendChild(block);
+
+      const optsEl = document.getElementById("opts" + qId);
+      const feedback = document.getElementById("fb" + qId);
+      const letters = ["A","B","C","D"];
+
+      q.opts.forEach(function(opt, oi) {
+        const btn = document.createElement("button");
+        btn.className = "opt-btn";
+        btn.innerHTML = '<span class="opt-letter">' + letters[oi] + '</span><span>' + opt + '</span>';
+        btn.addEventListener("click", function() {
+          handleAnswer(qId, oi, q.ans, block, optsEl, feedback);
+        });
+        optsEl.appendChild(btn);
+      });
+    });
+  });
+}
+
+function handleAnswer(qId, chosen, correctIdx, block, optsEl, feedback) {
+  if (userAnswers[qId] !== undefined) return;
+  userAnswers[qId] = chosen;
+
+  var btns = optsEl.querySelectorAll(".opt-btn");
+  btns.forEach(function(b) { b.disabled = true; });
+
+  var isCorrect = chosen === correctIdx;
+  btns[chosen].classList.add(isCorrect ? "correct" : "wrong");
+  if (!isCorrect) btns[correctIdx].classList.add("reveal-correct");
+
+  feedback.classList.add("show");
+  if (isCorrect) {
+    feedback.classList.add("ok");
+    feedback.textContent = "✓  Correct!";
+    correct++;
+    document.getElementById("s-cor").textContent = correct;
+  } else {
+    feedback.classList.add("no");
+    feedback.textContent = "✗  Wrong — correct answer: " + ["A","B","C","D"][correctIdx];
+    wrong++;
+    document.getElementById("s-wrg").textContent = wrong;
+  }
+
+  block.classList.add("answered");
+  answered++;
+  document.getElementById("s-ans").textContent = answered;
+  document.getElementById("s-pct").textContent = answered > 0 ? Math.round((correct / answered) * 100) : 0;
+  document.getElementById("progress-fill").style.width = Math.round((answered / 80) * 100) + "%";
+}
+
+document.getElementById("submit-btn").addEventListener("click", function() {
+  var pct = Math.round((correct / 80) * 100);
+  var title = pct >= 85 ? "Excellent work! 🎉" :
+              pct >= 70 ? "Good job! 👍" :
+              pct >= 55 ? "Getting there — keep practising." :
+                          "Needs more revision — go back through the lesson plan.";
+
+  document.getElementById("res-title").textContent = title;
+  document.getElementById("res-score").textContent = correct + " / 80";
+  document.getElementById("res-pct").textContent = pct + "%  —  " + answered + " of 80 questions answered";
+
+  var bd = document.getElementById("res-breakdown");
+  bd.innerHTML = "";
+  var qNum = 0;
+  SECTIONS.forEach(function(section) {
+    var sc = 0;
+    section.qs.forEach(function(q) {
+      qNum++;
+      if (userAnswers[qNum] === q.ans) sc++;
+    });
+    var name = section.label.split(" — ")[1];
+    var pill = document.createElement("div");
+    pill.className = "bk-pill " + (sc / section.qs.length >= 0.6 ? "g" : "b");
+    pill.textContent = name + ": " + sc + "/" + section.qs.length;
+    bd.appendChild(pill);
+  });
+
+  var rb = document.getElementById("result-box");
+  rb.style.display = "block";
+  rb.scrollIntoView({ behavior: "smooth" });
+});
+
+buildQuiz();
+</script>
+</body>
+</html>
